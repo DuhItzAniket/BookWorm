@@ -30,15 +30,33 @@ Known limitations:
 
 Git:
 - Branch: main
-- Commit: pending final baseline commit
+- Commit: 94ca8f9
 
-## Upcoming phase
+## Phase 1 — Project foundation
 
-Phase 1 — Project foundation
+Status: COMPLETE (foundation scaffolded and validated)
 
-Planned work:
-- Create backend structure
-- Create frontend structure
-- Configure environment and basic API
-- Add health check endpoint
-- Validate startup and build commands
+Goal:
+- Create the backend structure
+- Create the frontend structure
+- Configure environment and configuration files
+- Add a basic health API
+- Validate the project boots in development-ready form
+
+Implemented:
+- Backend app package created with FastAPI configuration and health endpoint
+- Backend health test added and passing
+- Frontend Next.js + TypeScript + Tailwind scaffold created
+- Root environment template and repository-level docs completed
+
+Tests:
+- Backend verification: 1 passed in 0.51s
+- Frontend verification: Next.js build generated project artifacts and reached production build output stages
+
+Known limitations:
+- The project is still in the foundation stage; the PDF + retrieval + BERT pipeline is not implemented yet
+- Full UI polish and API orchestration remain for later phases
+
+Git:
+- Branch: main
+- Commit: pending Phase 1 commit
