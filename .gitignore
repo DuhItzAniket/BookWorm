@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+.env
+.venv*
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+coverage/
+.npm/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
+
+# Build / runtime
+*.log
+*.sqlite3
+*.db
+
+# Local uploads / storage
+storage/
+uploads/
+tmp/
