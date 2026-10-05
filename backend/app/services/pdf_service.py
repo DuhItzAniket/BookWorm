@@ -5,7 +5,7 @@ import re
 import zipfile
 from dataclasses import dataclass
 from html import unescape
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from uuid import uuid4
 from xml.etree import ElementTree as ET
 
@@ -14,7 +14,7 @@ import fitz
 from app.core.config import settings
 
 
-TEXT_EXTENSIONS = {".txt", ".md", ".csv", ".rtf", ".html", ".htm"}
+TEXT_EXTENSIONS = {".txt", ".md", ".csv", ".html", ".htm"}
 DOCUMENT_EXTENSIONS = {".docx", ".epub"}
 SUPPORTED_EXTENSIONS = {".pdf"} | TEXT_EXTENSIONS | DOCUMENT_EXTENSIONS
 
@@ -42,27 +42,16 @@ def _resolve_extension(file_name: str, content_type: str | None = None) -> str:
         if lowered_name.endswith(extension):
             return extension
 
-    if content_type:
-        normalized_content_type = content_type.lower()
-        if "pdf" in normalized_content_type:
-            return ".pdf"
-        if "text" in normalized_content_type or "json" in normalized_content_type:
-            return ".txt"
-        if "word" in normalized_content_type or "officedocument" in normalized_content_type:
-            return ".docx"
-        if "epub" in normalized_content_type:
-            return ".epub"
-
     raise ValueError("Unsupported document format. Supported formats include PDF, TXT, MD, DOCX, EPUB, and HTML files.")
 
 
 def _decode_text_bytes(content: bytes) -> str:
-    for encoding in ("utf-8", "utf-8-sig", "latin-1", "cp1252"):
+    for encoding in ("utf-8-sig", "cp1252"):
         try:
             return content.decode(encoding)
         except UnicodeDecodeError:
             continue
-    return content.decode("utf-8", errors="replace")
+    raise ValueError("Text must use UTF-8 or Windows-1252 encoding.")
 
 
 def _strip_html(raw_html: str) -> str:
@@ -73,8 +62,17 @@ def _strip_html(raw_html: str) -> str:
     return re.sub(r"\s+", " ", cleaned).strip()
 
 
+def _check_archive(archive):
+    entries = archive.infolist()
+    if len(entries) > 5000 or sum(item.file_size for item in entries) > 40 * 1024 * 1024:
+        raise ValueError("Archive expands beyond the 40 MB / 5000 entry limit.")
+    if any(item.flag_bits & 1 for item in entries):
+        raise ValueError("Encrypted archives are not supported.")
+
+
 def _extract_docx_text(content: bytes) -> str:
     with zipfile.ZipFile(io.BytesIO(content)) as archive:
+        _check_archive(archive)
         if "word/document.xml" not in archive.namelist():
             raise ValueError("Invalid DOCX file: no document content was found.")
 
@@ -96,6 +94,7 @@ def _extract_docx_text(content: bytes) -> str:
 
 def _extract_epub_text(content: bytes) -> str:
     with zipfile.ZipFile(io.BytesIO(content)) as archive:
+        _check_archive(archive)
         container_path = "META-INF/container.xml"
         if container_path not in archive.namelist():
             raise ValueError("Invalid EPUB file: missing container metadata.")
@@ -113,21 +112,19 @@ def _extract_epub_text(content: bytes) -> str:
         opf_root = ET.fromstring(archive.read(opf_path))
         namespace = {"opf": "http://www.idpf.org/2007/opf"}
         manifest_items = opf_root.findall(".//opf:item", namespace)
-        chapter_paths: list[str] = []
-
-        for item in manifest_items:
-            media_type = item.attrib.get("media-type", "")
-            href = item.attrib.get("href", "")
-            if "xhtml" in media_type.lower() and href:
-                chapter_paths.append(href)
+        manifest = {item.attrib.get("id"): item.attrib.get("href", "")
+                    for item in manifest_items if "xhtml" in item.attrib.get("media-type", "")}
+        spine = opf_root.findall(".//opf:spine/opf:itemref", namespace)
+        chapter_paths = [manifest[item.attrib.get("idref")] for item in spine
+                         if item.attrib.get("idref") in manifest]
 
         if not chapter_paths:
             raise ValueError("Invalid EPUB file: no readable chapter content was found.")
 
         sections: list[str] = []
-        base_dir = str(Path(opf_path).parent)
+        base_dir = str(PurePosixPath(opf_path).parent)
         for href in chapter_paths:
-            full_path = str(Path(base_dir) / href) if base_dir != "." else href
+            full_path = str(PurePosixPath(base_dir) / href) if base_dir != "." else href
             try:
                 raw_html = archive.read(full_path)
             except KeyError:
@@ -162,6 +159,9 @@ def validate_document_file(file_name: str, content: bytes, content_type: str | N
 
         try:
             pdf_document = fitz.open(stream=content, filetype="pdf")
+            if pdf_document.needs_pass:
+                pdf_document.close()
+                raise ValueError("Encrypted PDFs are not supported.")
             page_count = pdf_document.page_count
             pdf_document.close()
         except Exception as exc:  # pragma: no cover - thin wrapper for invalid PDFs
@@ -250,6 +250,8 @@ def extract_document_pages(file_name: str, content: bytes) -> list[dict[str, str
         return extract_pdf_pages(content)
 
     if extension in TEXT_EXTENSIONS:
+        if b"\x00" in content:
+            raise ValueError("Binary content is not supported as a text document.")
         text = _decode_text_bytes(content)
         if extension in {".html", ".htm"}:
             text = _strip_html(text)
@@ -293,7 +295,7 @@ def validate_pdf_file(file_name: str, content: bytes, content_type: str | None =
     if not content:
         raise ValueError("Invalid PDF: empty file uploaded.")
 
-    detected_extension = _resolve_extension(file_name, content_type) if file_name.lower().endswith((".pdf", ".txt", ".md", ".csv", ".rtf", ".html", ".htm", ".docx", ".epub")) else ".pdf"
+    detected_extension = _resolve_extension(file_name, content_type) if file_name.lower().endswith((".pdf", ".txt", ".md", ".csv", ".html", ".htm", ".docx", ".epub")) else ".pdf"
     if detected_extension != ".pdf":
         raise ValueError("Invalid PDF: file type is not a valid PDF.")
 

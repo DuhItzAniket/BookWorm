@@ -11,6 +11,13 @@ class Settings(BaseSettings):
     temp_dir: str = "./storage/tmp"
     max_file_size_mb: int = 20
     max_pages: int = 500
+    max_extracted_chars: int = 2_000_000
+    qa_model_name: str = "deepset/bert-base-cased-squad2"
+    qa_device: str = "cpu"
+    qa_threshold: float = 0.08
+    top_k: int = 5
+    brave_search_api_key: str = ""
+    demo_access_token: str = ""
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

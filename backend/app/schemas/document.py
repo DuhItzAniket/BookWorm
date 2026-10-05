@@ -12,7 +12,6 @@ class DocumentRead(BaseModel):
     size: int
     page_count: int
     status: str
-    storage_location: str
     processing_error: str | None = None
     created_at: datetime
 
@@ -41,5 +40,4 @@ class UploadResponse(BaseModel):
     size: int
     page_count: int
     status: str
-    storage_location: str
     processing_error: str | None = None
