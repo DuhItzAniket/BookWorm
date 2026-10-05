@@ -1,62 +1,22 @@
-# BookWorm Phase Status
+﻿# Phase status
 
-## Phase 0 — Repository discovery and project baseline
+Updated 2026-10-05. The earlier notes incorrectly described this repository as empty after ingestion code had already landed. The revised plan supersedes those notes.
 
-Status: COMPLETE
+| Phase | Status | Evidence |
+|---|---|---|
+| 0: Analysis and revised plan | Complete | Existing upload/frontend code inspected; Vercel official function limits retrieved; scope and gates in IMPLEMENTATION_PLAN.md |
+| 1: Backend vertical slice | In verification | 17 offline tests passed; actual BERT model verification underway |
+| 2: Reading-room interface | In verification | Responsive interface implemented; production build and browser checks pending |
+| 3: Reproducibility and release | In progress | Evaluation and deployment documentation pending |
 
-Goal:
-- Inspect the repository
-- Confirm the project is empty and uninitialized
-- Establish the Git baseline
-- Write architecture and development documentation
-- Prepare the phased implementation plan
+## Phase 0 SDLC record
 
-Implemented:
-- Local Git repository initialized on the main branch
-- GitHub remote connected to https://github.com/DuhItzAniket/BookWorm.git
-- Project baseline documentation created
-- Architecture and implementation planning created in docs/
-- Environment example file prepared
-- Repository-level .gitignore added
+Requirements: document chatbot, required SQuAD-style BERT, optional internet search, Vercel frontend, polished interface, reproducible academic project.
 
-Tests:
-- Repository initialization verified
-- Git remote configured successfully
-- Documentation files created successfully
+Analysis: existing ingestion and UI were present; retrieval and QA were missing. Chunk overlap was configured but not implemented. EPUB paths used OS separators, and archive entry order ignored the spine. Global Python dependencies were inconsistent; the existing project virtual environment is usable. NVIDIA RTX 4050 is present; installed PyTorch is CPU-only.
 
-Known limitations:
-- No application code exists yet
-- No backend or frontend project scaffolding has been created
+Design: protected shared-library demo; exact-span BERT reader; separate document/web modes; Vercel frontend plus persistent Python backend. Official Vercel documentation currently lists a 500 MB uncompressed Python bundle limit and 4.5 MB function payload limit. Direct backend uploads avoid that frontend limit.
 
-Git:
-- Branch: main
-- Commit: 94ca8f9
+Validation: repository inspection and official documentation retrieval completed. No deployed system is claimed.
 
-## Phase 1 — Project foundation
-
-Status: COMPLETE (foundation scaffolded and validated)
-
-Goal:
-- Create the backend structure
-- Create the frontend structure
-- Configure environment and configuration files
-- Add a basic health API
-- Validate the project boots in development-ready form
-
-Implemented:
-- Backend app package created with FastAPI configuration and health endpoint
-- Backend health test added and passing
-- Frontend Next.js + TypeScript + Tailwind scaffold created
-- Root environment template and repository-level docs completed
-
-Tests:
-- Backend verification: 1 passed in 0.51s
-- Frontend verification: Next.js build generated project artifacts and reached production build output stages
-
-Known limitations:
-- The project is still in the foundation stage; the PDF + retrieval + BERT pipeline is not implemented yet
-- Full UI polish and API orchestration remain for later phases
-
-Git:
-- Branch: main
-- Commit: pending Phase 1 commit
+Risks: real model download/startup, search-provider credentials, hosting costs and persistent disk availability. Test these explicitly and retain honest limitations.
