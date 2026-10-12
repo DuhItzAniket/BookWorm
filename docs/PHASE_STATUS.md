@@ -7,7 +7,7 @@ Updated 2026-10-12. The earlier notes incorrectly described this repository as e
 | 0: Analysis and revised plan | Complete | Existing upload/frontend code inspected; Vercel official function limits retrieved; scope and gates in IMPLEMENTATION_PLAN.md |
 | 1: Backend vertical slice | Complete | 17 offline tests passed; actual pretrained BERT extracted the correct school from the supplied sample |
 | 1B: Glypharis integration preparation | Complete, real-model integration pending upstream | 24 offline tests passed; optional adapter, PDF routing, provenance and integration contract |
-| 2: Reading-room interface | In verification | Responsive interface implemented; production build and browser checks pending |
+| 2: Reading-room interface | Complete | Lint/build pass; real upload-to-BERT answer, abstention, desktop/mobile inspection |
 | 3: Reproducibility and release | In progress | Evaluation and deployment documentation pending |
 
 ## Phase 0 SDLC record
@@ -43,3 +43,13 @@ Design/implementation: optional lazy Python adapter behind an internal protocol;
 Validation: 24 backend tests passed, including seven new contract/integration tests for mixed PDFs, disabled or missing OCR, invalid scores, pixel/page limits, temporary-image cleanup and OCR provenance in answers. These use fake OCR output, not a trained model. Existing native ingestion and QA regressions pass.
 
 Release gate: actual Glypharis v0.1 installation, coordinate/API compatibility, performance/quality measurements and deployment acceptance remain pending its upstream release. No OCR accuracy or successful real-model integration is claimed.
+
+## Phase 2 SDLC record (2026-10-12)
+
+Requirements: a tailored reading-room interface with document library, chat, evidence, separate web mode and responsive design.
+
+Implementation: warm paper/green palette, serif reading typography, custom book illustration, library selection, bounded upload, per-document in-memory conversation, exact-span evidence highlighting, no-answer state, loading/error states, shared-token connection panel and OCR provenance notice. Next.js upgraded to 16.3.8/React 19.3.0; unused Tailwind configuration removed. Connection loading has effect cleanup and handles invalid server responses. No external fonts or generated illustration assets are required.
+
+Validation: `npm run lint` and `npm run build` passed. Playwright uploaded the sample through the actual UI and obtained “Hogwarts School of Witchcraft and Wizardry” from the real BERT API with highlighted evidence. An unanswerable library question returned no answer. Desktop 1440×1000 and mobile 390×844 screenshots inspected; mobile document width equals viewport width. Browser console reported zero errors/warnings. Web button is disabled without a provider key. Production dependency audit: zero vulnerabilities.
+
+Limitations: real Brave requests need a key; history lasts only in the current tab; the library is shared by token holders. Full dependency audit still reports five dev-only findings in the Next ESLint plugin's glob/braces chain; production dependencies are unaffected. These are disclosed, not suppressed by a forced framework downgrade.

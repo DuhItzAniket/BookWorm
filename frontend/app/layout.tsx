@@ -6,7 +6,11 @@ export const metadata: Metadata = {
   description: "Document question answering powered by retrieval and BERT.",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="en">
       <body>{children}</body>

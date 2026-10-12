@@ -14,6 +14,10 @@ node_modules/
 out/
 coverage/
 .npm/
+*.tsbuildinfo
+.pytest_cache/
+output/
+.playwright-cli/
 
 # OS/editor
 .DS_Store
