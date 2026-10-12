@@ -1,0 +1,8 @@
+﻿[
+  {"id":"school","context":"Harry Potter studies at Hogwarts School of Witchcraft and Wizardry. His friend is Ron Weasley.","question":"Where does Harry Potter study?","answers":["Hogwarts School of Witchcraft and Wizardry","Hogwarts"]},
+  {"id":"friend","context":"Harry Potter studies at Hogwarts School of Witchcraft and Wizardry. His friend is Ron Weasley.","question":"Who is Harry Potter's friend?","answers":["Ron Weasley"]},
+  {"id":"science","context":"Marie Curie discovered polonium and radium. She won the Nobel Prize in Chemistry in 1911.","question":"When did Marie Curie win the Nobel Prize in Chemistry?","answers":["1911"]},
+  {"id":"place","context":"The Riverbank Library opened in Pune in 2008. Its founder was Asha Mehta.","question":"Who founded the Riverbank Library?","answers":["Asha Mehta"]},
+  {"id":"unanswerable","context":"The Riverbank Library opened in Pune in 2008. Its founder was Asha Mehta.","question":"How many books does the Riverbank Library own?","answers":[""]},
+  {"id":"no_overlap","context":"The river flows through the valley.","question":"Who invented the telephone?","answers":[""]}
+]

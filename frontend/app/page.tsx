@@ -462,11 +462,16 @@ export default function Home() {
                           </span>
                         </summary>
                         <blockquote>
-                          {source.text.slice(0, source.start)}
+                          {/* Python evidence offsets count Unicode code points, not UTF-16 units. */}
+                          {Array.from(source.text)
+                            .slice(0, source.start)
+                            .join("")}
                           <mark>
-                            {source.text.slice(source.start, source.end)}
+                            {Array.from(source.text)
+                              .slice(source.start, source.end)
+                              .join("")}
                           </mark>
-                          {source.text.slice(source.end)}
+                          {Array.from(source.text).slice(source.end).join("")}
                         </blockquote>
                         {source.ocr_review_required && (
                           <p className="answer-hint">

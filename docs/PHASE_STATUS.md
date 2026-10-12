@@ -8,7 +8,7 @@ Updated 2026-10-12. The earlier notes incorrectly described this repository as e
 | 1: Backend vertical slice | Complete | 17 offline tests passed; actual pretrained BERT extracted the correct school from the supplied sample |
 | 1B: Glypharis integration preparation | Complete, real-model integration pending upstream | 24 offline tests passed; optional adapter, PDF routing, provenance and integration contract |
 | 2: Reading-room interface | Complete | Lint/build pass; real upload-to-BERT answer, abstention, desktop/mobile inspection |
-| 3: Reproducibility and release | In progress | Evaluation and deployment documentation pending |
+| 3: Reproducibility and release | Complete locally; cloud acceptance remains user-operated | Docker build/API/persistence and 24 Linux tests pass; frontend lint/build pass; CI and guides packaged |
 
 ## Phase 0 SDLC record
 
@@ -53,3 +53,15 @@ Implementation: warm paper/green palette, serif reading typography, custom book 
 Validation: `npm run lint` and `npm run build` passed. Playwright uploaded the sample through the actual UI and obtained “Hogwarts School of Witchcraft and Wizardry” from the real BERT API with highlighted evidence. An unanswerable library question returned no answer. Desktop 1440×1000 and mobile 390×844 screenshots inspected; mobile document width equals viewport width. Browser console reported zero errors/warnings. Web button is disabled without a provider key. Production dependency audit: zero vulnerabilities.
 
 Limitations: real Brave requests need a key; history lasts only in the current tab; the library is shared by token holders. Full dependency audit still reports five dev-only findings in the Next ESLint plugin's glob/braces chain; production dependencies are unaffected. These are disclosed, not suppressed by a forced framework downgrade.
+
+## Phase 3 SDLC record (2026-10-12)
+
+Requirements: reproducible setup, honest academic evaluation, deployment feasibility and detailed Vercel guide, regression checks and release checkpoints.
+
+Implementation: pinned direct/complete Python requirements, CPU Docker image with non-root user and persistent disk paths, model cache warmup, lightweight CI requirements, GitHub Actions backend/frontend checks, real API smoke command, BERT evaluation harness/results, revised README/development/architecture/decisions, and step-by-step Vercel guide. The evaluation now records model revision, dataset hash, environment and timestamp. Frontend evidence highlighting accounts for Python Unicode code-point offsets, including non-BMP characters. Environment override files are ignored to prevent accidental secret commits.
+
+Validation: Windows tests: 24 passed; Linux Docker tests: 24 passed; pip dependency checks pass. Docker image builds successfully, loads the pinned BERT on CPU from a read-only offline cache, rejects unauthenticated library access, accepts an upload, and answers with correct source offsets. A restart retains the document on the named disk. Frontend lint, TypeScript and final production build pass. Real BERT sanity evaluation: 6/6 normalized EM and F1, explicitly not a benchmark. Desktop/mobile browser flow verified in Phase 2. Production npm audit has zero findings; five development-only transitive findings remain documented above.
+
+Operational limits: no paid service provisioned; no public cloud deployment asserted; fresh-host model download and real Brave queries still require deployment acceptance. Glypharis's trained engine and licence are pending upstream. Authentication is a shared library token, not individual accounts. Synchronous OCR is capped at five pages and has no hard inference cancellation. See [Vercel guide](VERCEL_GUIDE.md), [OCR gate](GLYPHARIS_INTEGRATION.md) and [evaluation plan](evaluation/README.md).
+
+Checkpoint history: plan `b785bb2`, backend `6013219`, OCR preparation `21d0885`, interface `0d497a0`. The release commit that contains this record is the next checkpoint; Git history is authoritative.

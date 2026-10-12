@@ -6,6 +6,8 @@ __pycache__/
 .venv/
 venv/
 .env
+.env.*
+!.env.example
 .venv*
 
 # Node / Next.js

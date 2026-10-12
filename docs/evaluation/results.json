@@ -1,0 +1,90 @@
+{
+  "model": "deepset/bert-base-cased-squad2",
+  "device": "cpu",
+  "model_revision": "d378e310c8000d824954c1e76c943a0581b49f0c",
+  "evaluated_at": "2026-10-12T18:18:10.734289+00:00",
+  "python": "3.11.9",
+  "platform": "Windows",
+  "torch": "2.14.1+cpu",
+  "dataset_sha256": "071e795a8153fd0f3b83eb4974d35575cc4a5526bfd3b34a10002f6b8578a09f",
+  "notice": "Sanity evaluation, not a benchmark or evidence of general accuracy. Context is supplied; this does not measure book-scale retrieval recall.",
+  "model_load_seconds": 14.351,
+  "count": 6,
+  "exact_match": 1.0,
+  "f1": 1.0,
+  "cases": [
+    {
+      "id": "school",
+      "question": "Where does Harry Potter study?",
+      "prediction": "Hogwarts School of Witchcraft and Wizardry",
+      "expected": [
+        "Hogwarts School of Witchcraft and Wizardry",
+        "Hogwarts"
+      ],
+      "no_answer": false,
+      "exact_match": 1.0,
+      "f1": 1.0,
+      "seconds": 0.13
+    },
+    {
+      "id": "friend",
+      "question": "Who is Harry Potter's friend?",
+      "prediction": "Ron Weasley",
+      "expected": [
+        "Ron Weasley"
+      ],
+      "no_answer": false,
+      "exact_match": 1.0,
+      "f1": 1.0,
+      "seconds": 0.07
+    },
+    {
+      "id": "science",
+      "question": "When did Marie Curie win the Nobel Prize in Chemistry?",
+      "prediction": "1911",
+      "expected": [
+        "1911"
+      ],
+      "no_answer": false,
+      "exact_match": 1.0,
+      "f1": 1.0,
+      "seconds": 0.072
+    },
+    {
+      "id": "place",
+      "question": "Who founded the Riverbank Library?",
+      "prediction": "Asha Mehta",
+      "expected": [
+        "Asha Mehta"
+      ],
+      "no_answer": false,
+      "exact_match": 1.0,
+      "f1": 1.0,
+      "seconds": 0.065
+    },
+    {
+      "id": "unanswerable",
+      "question": "How many books does the Riverbank Library own?",
+      "prediction": "",
+      "expected": [
+        ""
+      ],
+      "no_answer": true,
+      "exact_match": 1.0,
+      "f1": 1.0,
+      "seconds": 0.069
+    },
+    {
+      "id": "no_overlap",
+      "question": "Who invented the telephone?",
+      "prediction": "",
+      "expected": [
+        ""
+      ],
+      "no_answer": true,
+      "exact_match": 1.0,
+      "f1": 1.0,
+      "seconds": 0.064
+    }
+  ]
+}

@@ -1,95 +1,61 @@
-# BookWorm
+﻿# BookWorm
 
-BookWorm is a document question-answering application built around a PDF ingestion pipeline, retrieval layer, and pretrained BERT extractive QA model. The project follows the academic architecture required for a document QA system: extract text from a PDF, split it into chunks, retrieve the most relevant passages, and run BERT to answer the question using only evidence from the uploaded document.
+A reading room for your documents: upload a book or paper, ask a question, and inspect the passage behind the answer.
 
-## Overview
+**Next.js frontend + FastAPI + pretrained BERT (SQuAD 2.0) + TF-IDF retrieval.** The interface supports a separate, optional web-search mode with source links. This is an academic, English-language, shared-library demo.
 
-The system allows a user to:
+## What works
 
-- upload a PDF document
-- wait while the document is processed
-- inspect processing progress
-- ask questions in natural language
-- receive grounded answers with source page and evidence
-- view question history for the active document
-- upload a new document and begin a new session
+- PDF, DOCX, EPUB, TXT, Markdown, CSV and HTML ingestion, with size/text/archive limits.
+- Overlapping token windows and TF-IDF passage retrieval for long documents.
+- Genuine BERT extractive QA using `deepset/bert-base-cased-squad2`, pinned to a checkpoint revision.
+- Exact answer spans, source excerpts, PDF page numbers, and no-answer behavior.
+- Responsive library/chat UI, document-specific in-memory conversation history, upload/error/loading states.
+- Optional Brave Search excerpts as open-domain evidence; uploaded content is not sent to the search provider.
+- Protected demo access, offline API tests, real-model sanity evaluation, CI and a Docker deployment recipe.
+- Optional Glypharis OCR integration boundary, with bounded PDF rendering and OCR provenance. Disabled until its trained release is validated.
 
-## Problem Statement
+## Run locally
 
-Large books and documents cannot be passed directly into a BERT model as one long context. A practical solution is to retrieve the most relevant passages and then ask BERT to extract an answer span from those passages. This creates a retrieval + extractive QA system that is explainable, document-grounded, and suitable for academic evaluation.
+Python 3.11 and Node.js 22+ are recommended. Windows PowerShell:
 
-## Architecture Summary
-
-- Frontend: Next.js + TypeScript + Tailwind
-- Backend: FastAPI + Python
-- ML layer: Hugging Face Transformers, PyTorch, scikit-learn
-- Persistence: SQLAlchemy with SQLite in development
-- PDF processing: PyMuPDF / pypdf-compatible extraction pipeline
-- Retrieval: TF-IDF + cosine similarity
-- QA model: BERT-family extractive QA model
-
-## Core ML Pipeline
-
-1. Upload a PDF
-2. Extract text while preserving page boundaries
-3. Clean and normalize extracted text
-4. Chunk the document with token-aware limits and overlap
-5. Build a TF-IDF index over document chunks
-6. Retrieve the top-k related passages for a question
-7. Run a pretrained BERT QA model on each candidate passage
-8. Rank candidates and return the strongest grounded answer
-9. Show the answer, confidence, page, and evidence snippet
-
-## BERT QA Explanation
-
-BERT is retained as the core answering model. The retrieval layer exists only to make the document manageable for BERT. This follows the academic requirement for a SQuAD-style extractive QA system: the model does not invent answers, and it operates on retrieved evidence from the uploaded document.
-
-## Project Status
-
-This repository is being developed in phases. The current baseline establishes the repository, the architecture, the decision log, and the implementation roadmap.
-
-## Repository Layout
-
-```text
-BookWorm/
-├── backend/
-│   ├── app/
-│   ├── tests/
-│   └── requirements.txt
-├── frontend/
-│   ├── app/
-│   ├── components/
-│   └── package.json
-├── docs/
-│   ├── ARCHITECTURE.md
-│   ├── DEVELOPMENT.md
-│   ├── DECISIONS.md
-│   ├── PHASE_STATUS.md
-│   └── evaluation/
-├── .env.example
-├── .gitignore
-├── README.md
-└── ...
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r backend/requirements.lock.txt
+Copy-Item .env.example backend/.env
+cd backend
+..\.venv\Scripts\python.exe -m scripts.warm_model
+..\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
 ```
 
-## Local Setup
+In another terminal:
 
-See the development guide in the docs folder for the project workflow and environment setup.
+```powershell
+cd frontend
+Copy-Item .env.example .env.local
+npm.cmd ci
+npm.cmd run dev
+```
 
-## Testing
+Open <http://localhost:3000>. The first model download needs internet and several hundred MB of model-cache storage. CPU inference is supported. For Linux/macOS and optional NVIDIA setup, see [Development](docs/DEVELOPMENT.md).
 
-Backend tests will be added incrementally by phase. The project will use pytest for Python verification.
+## Deploy on Vercel
 
-## Deployment
+**Yes: deploy the frontend to Vercel, and deploy the Python model service separately.** The complete app is not intended to run inside Vercel Functions. Follow the [Vercel deployment guide](docs/VERCEL_GUIDE.md), including backend storage, access token, CORS, environment variables, and smoke tests.
 
-The frontend is intended for Vercel deployment, while the Python ML backend is designed to run in a suitable Python hosting environment where BERT and PyTorch inference are supported reliably.
+## Read the project
 
-## Limitations
+- [Implementation plan and SDLC](docs/IMPLEMENTATION_PLAN.md)
+- [Architecture and API](docs/ARCHITECTURE.md)
+- [Decisions and tradeoffs](docs/DECISIONS.md)
+- [Phase checkpoints and validation](docs/PHASE_STATUS.md)
+- [Evaluation method and actual sanity results](docs/evaluation/README.md)
+- [Glypharis integration contract and release gate](docs/GLYPHARIS_INTEGRATION.md)
 
-- The initial phase is a clean project baseline and implementation plan, not a full end-to-end app
-- OCR for scanned PDFs is deferred until the core PDF + retrieval + QA pipeline is working reliably
-- Full production deployment will depend on cloud credentials and hosting decisions later in the project
+## Honest limitations
 
-## Academic Relevance
+This is retrieval-augmented **extractive QA**, not a generative chatbot. It answers specific questions whose answers appear in the evidence; it does not summarize whole books or infer what “he” refers to from previous turns. Scores are uncalibrated, and even exact-span answers can be wrong. English is the supported model language.
 
-This project is designed to demonstrate a practical question-answering system using retriever + BERT extractive QA, with clear source attribution and evidence grounded in the uploaded document.
+Scanned PDFs need a validated Glypharis release; its prepared adapter is disabled by default. Legacy DOC/RTF must be converted. Non-PDF inputs use a text section rather than physical page numbering; tables are flattened. Web mode needs your own Brave Search API key and operates on search excerpts, not fully crawled pages. History lasts for the current tab session. Documents persist on the backend.
+
+Everyone using the demo token shares the same library. Individual accounts, document ownership, rate limits, automatic retention, background job queues, and multi-worker scaling are future work. Do not host sensitive documents in a publicly shared demo. RoBERTa/ALBERT/T5 comparisons are planned experiments, not claimed implemented features.

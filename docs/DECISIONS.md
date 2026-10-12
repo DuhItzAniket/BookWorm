@@ -1,29 +1,18 @@
-# BookWorm Decisions Log
+# Decisions and tradeoffs
 
-## Decision 01 — Repository baseline is empty
+| Decision | Reason | Consequence |
+|---|---|---|
+| Genuine BERT SQuAD 2.0 checkpoint | Meets the assignment and models unanswerable questions | Extractive answers only; not summaries or conversation reasoning |
+| TF-IDF baseline | Explainable, inexpensive and easy to evaluate | Lexical mismatch can miss the right passage; dense retrieval needs a measured comparison |
+| Exact text windows and offsets | Evidence can be inspected | Normalized text differs from original visual layout |
+| Separate document/web modes | Evidence origins and external requests are explicit | Search answers use snippets, not complete webpages |
+| Separate Vercel frontend and persistent Python service | Fits current SQLite/files and warm model process | Two deployment services and CORS configuration |
+| Shared-token demo | Small academic deployment without account infrastructure | Every token holder accesses the same library; not multi-tenant isolation |
+| No generated answer fallback | Avoid replacing the required reader with an unrelated chatbot | The system abstains or returns short spans instead of polished prose |
+| Optional Glypharis bridge | User owns a separate CPU-first OCR project still in development | Prepared adapter, disabled feature, real-model release gate |
+| Additive OCR provenance table | Preserve native-text databases while tracing recognized text | Future schema changes still require explicit migrations |
+| Plain CSS reading-room UI | Tailored typography/layout without unused style frameworks | UI styles live in the application stylesheet |
 
-The workspace currently has no source code, no branch history, and no project files. The project will therefore begin from a clean repository baseline rather than trying to retrofit existing code.
+The earlier baseline documents described an empty repository; that description is historical and no longer valid. Current implementation and verification are tracked in [phase status](PHASE_STATUS.md), [architecture](ARCHITECTURE.md) and [the plan](IMPLEMENTATION_PLAN.md).
 
-## Decision 02 — Use a retrieval + extractive QA architecture
-
-The academic requirement is explicit: the system must retain BERT as the core question-answering model. Retrieval is used only to solve the large-document context-size problem.
-
-## Decision 03 — Use clear phase-based delivery
-
-The project will be implemented in defined phases, with a mandatory test and documentation gate after each phase. This keeps the project maintainable and avoids building the final application without verifying each layer.
-
-## Decision 04 — Separate frontend and backend
-
-The frontend is a user-facing application while the ML pipeline remains in Python. This improves portability, testing, and deployment flexibility.
-
-## Decision 05 — Use SQLite for development, PostgreSQL-ready architecture for production
-
-SQLite is the simplest professional choice for local development and tests, while SQLAlchemy keeps the data layer compatible with PostgreSQL-like deployment environments later.
-
-## Decision 06 — Prefer document-grounded no-answer behavior
-
-If the document does not contain enough evidence, the application should return a clear “could not find a reliable answer” message instead of inventing information.
-
-## Decision 07 — Keep the first implementation straightforward
-
-The project should not overengineer the first version with Kubernetes, Redis, Kafka, vector databases, or complex orchestration when the core PDF + retrieval + BERT pipeline is still being built.
+RoBERTa and ALBERT are potential extractive QA comparisons, using QA-fine-tuned checkpoints under the same retrieval conditions. T5 is a separate generative experiment. GPT-2 is not an instruction-following QA model out of the box; a GPT-3-family hosted baseline would involve a separate provider and evaluation protocol. None of these comparisons is currently implemented or represented as a working model selector.

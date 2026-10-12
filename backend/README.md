@@ -1,6 +1,6 @@
 # BookWorm Backend
 
-This directory contains the Python API and ML service foundation for BookWorm.
+FastAPI document ingestion, retrieval, BERT QA and optional Glypharis adapter. See [development](../docs/DEVELOPMENT.md), [architecture](../docs/ARCHITECTURE.md), and [deployment](../docs/VERCEL_GUIDE.md) for the complete setup and limitations.
 
 ## Quick start
 
@@ -8,6 +8,6 @@ This directory contains the Python API and ML service foundation for BookWorm.
 cd backend
 python -m venv .venv
 source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+pip install -r requirements.lock.txt
 uvicorn app.main:app --reload
 ```
