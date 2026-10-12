@@ -8,6 +8,7 @@ from app.db import get_db
 from app.core.config import settings
 from app.schemas.document import UploadResponse
 from app.services.document_service import DocumentService
+from app.services.ocr_service import OCRUnavailable
 
 router = APIRouter(prefix="", tags=["documents"])
 
@@ -33,6 +34,9 @@ def upload_document(
             status=document.status,
             processing_error=document.processing_error,
         )
+    except OCRUnavailable as exc:
+        logging.getLogger(__name__).exception("OCR unavailable")
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
     except Exception as exc:  # pragma: no cover - safety guard

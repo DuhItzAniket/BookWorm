@@ -43,7 +43,7 @@ class BertReader:
             raise RuntimeError("CUDA was requested but this PyTorch installation cannot access it.")
         self.device = settings.qa_device
         self.model = AutoModelForQuestionAnswering.from_pretrained(
-            settings.qa_model_name, use_safetensors=True).to(self.device).eval()
+            settings.qa_model_name, revision=settings.qa_model_revision, use_safetensors=True).to(self.device).eval()
         self.lock = Lock()
 
     def read(self, question: str, context: str):

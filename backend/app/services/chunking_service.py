@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import lru_cache
@@ -9,7 +9,7 @@ from typing import Sequence
 def get_tokenizer():
     from transformers import AutoTokenizer
     from app.core.config import settings
-    return AutoTokenizer.from_pretrained(settings.qa_model_name, use_fast=True)
+    return AutoTokenizer.from_pretrained(settings.qa_model_name, revision=settings.qa_model_revision, use_fast=True)
 
 
 @dataclass

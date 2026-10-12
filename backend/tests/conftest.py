@@ -28,6 +28,7 @@ def isolated_app(tmp_path, monkeypatch):
     monkeypatch.setattr(settings, "upload_dir", str(tmp_path / "uploads"))
     monkeypatch.setattr(settings, "demo_access_token", "")
     monkeypatch.setattr(settings, "brave_search_api_key", "")
+    monkeypatch.setattr(settings, "ocr_provider", "disabled")
     from app.services import chunking_service
     from app.api import routes_questions
     monkeypatch.setattr(chunking_service, "get_tokenizer", lambda: WordTokenizer())

@@ -3,7 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from sqlalchemy.orm import Session
 from app.core.config import settings
-from app.models.document import Document, Page
+from app.models.document import Document, Page, PageExtraction
+from app.services.ocr_service import enrich_pdf_pages
 from app.repositories.document_repository import DocumentRepository
 from app.services.pdf_service import (extract_document_pages, save_document_to_storage,
                                       sanitize_filename, validate_document_file)
@@ -16,6 +17,7 @@ class DocumentService:
     def create_document(self, file_name: str, content: bytes, content_type=None) -> Document:
         validated = validate_document_file(file_name, content, content_type)
         pages = extract_document_pages(file_name, content)
+        extractions = enrich_pdf_pages(content, pages) if validated.extension == ".pdf" else []
         count = sum(len(str(p["clean_text"])) for p in pages)
         if not count:
             raise ValueError("No readable text found. Scanned PDFs need OCR before uploading.")
@@ -28,6 +30,7 @@ class DocumentService:
                             status="READY", storage_location=location)
         document.pages = [Page(page_number=int(p["page_number"]), raw_text=str(p["raw_text"]),
                                clean_text=str(p["clean_text"])) for p in pages]
+        document.extractions = [PageExtraction(**item) for item in extractions]
         try:
             return self.repository.create_document(document)
         except Exception:

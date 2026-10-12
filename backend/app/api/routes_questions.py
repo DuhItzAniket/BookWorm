@@ -32,6 +32,7 @@ class Question(BaseModel):
 @router.get("/capabilities")
 def capabilities():
     return {"web_search": bool(settings.brave_search_api_key), "model": settings.qa_model_name,
+            "ocr_provider": settings.ocr_provider,
             "max_file_size_mb": settings.max_file_size_mb,
             "formats": ["pdf", "docx", "epub", "txt", "md", "csv", "html", "htm"]}
 
@@ -59,6 +60,14 @@ def ask(payload: Question, db: Session = Depends(get_db)):
                 db.commit()
             passages = [Passage(c.text, c.page_start, document.filename) for c in chunks]
         result = answer_question(payload.question, passages)
+        if payload.mode == "document":
+            provenance = {entry.page_number: entry for entry in document.extractions}
+            for source in result["sources"]:
+                entry = provenance.get(source["page"])
+                source["extraction_method"] = entry.method if entry else "native"
+                if entry:
+                    source["ocr_model_version"] = entry.model_version
+                    source["ocr_review_required"] = True
         return {**result, "mode": payload.mode,
                 "evidence_type": "search snippets" if payload.mode == "web" else "uploaded document"}
     except HTTPException:

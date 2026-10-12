@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import ForeignKey, Integer, String, Text
+from sqlalchemy import ForeignKey, Integer, String, Text, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
@@ -24,6 +24,18 @@ class Document(Base):
 
     pages: Mapped[list["Page"]] = relationship(back_populates="document", cascade="all, delete-orphan")
     chunks: Mapped[list["Chunk"]] = relationship(back_populates="document", cascade="all, delete-orphan")
+    extractions: Mapped[list["PageExtraction"]] = relationship(cascade="all, delete-orphan")
+
+
+class PageExtraction(Base):
+    """Additive table: existing native-text databases need no column alteration."""
+    __tablename__ = "page_extractions"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    document_id: Mapped[int] = mapped_column(ForeignKey("documents.id"), nullable=False, index=True)
+    page_number: Mapped[int] = mapped_column(Integer, nullable=False)
+    method: Mapped[str] = mapped_column(String(30), nullable=False)
+    model_version: Mapped[str] = mapped_column(String(200), nullable=False)
+    details: Mapped[dict] = mapped_column(JSON, nullable=False)
 
 
 class Page(Base):

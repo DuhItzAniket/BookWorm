@@ -24,6 +24,7 @@ Each completed phase must include requirements/design notes, implementation, ver
 |---|---|---|
 | 0. Analysis and revised design | This plan; deployment feasibility; corrected scope | Existing source/docs inspected, official Vercel limits checked |
 | 1. Backend vertical slice | Ingestion fixes, overlapping chunks, retrieval, BERT, web adapter, access guard | Offline regression/API tests; real-model smoke test separately |
+| 1B. Glypharis preparation | Optional OCR adapter, mixed-PDF routing, source provenance, rollout contract | Offline contract tests; real OCR gate waits for upstream v0.1 |
 | 2. Reading-room interface | Responsive library, uploader, chat history, source excerpts, web mode, errors | Production build, type checks, browser interaction and responsive inspection |
 | 3. Reproducibility and release | SDLC records, evaluation harness, Docker, CI, setup and Vercel guide | Full test/build gates, real QA evaluation recorded, dependency/security checks |
 
@@ -37,7 +38,7 @@ Offline tests use an explicit test-only reader/tokenizer so CI neither downloads
 2. Compare TF-IDF with a sentence-transformer retriever on that same split, before introducing a vector database.
 3. Compare BERT with QA-fine-tuned RoBERTa/ALBERT under identical retrieval conditions. Evaluate T5 generation separately for grounding and factual errors.
 4. For many users: authentication/ownership, per-user rate limits, object storage, PostgreSQL, queue/worker ingestion, retention/deletion and observability.
-5. OCR and sophisticated table/layout extraction need separate acceptance tests.
+5. Glypharis OCR has a prepared integration boundary; enable only after the [upstream release gate](GLYPHARIS_INTEGRATION.md). Sophisticated table/layout extraction remains separate work.
 
 ## Change management
 
