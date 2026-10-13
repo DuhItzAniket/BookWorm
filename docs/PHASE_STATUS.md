@@ -64,4 +64,10 @@ Validation: Windows tests: 24 passed; Linux Docker tests: 24 passed; pip depende
 
 Operational limits: no paid service provisioned; no public cloud deployment asserted; fresh-host model download and real Brave queries still require deployment acceptance. Glypharis's trained engine and licence are pending upstream. Authentication is a shared library token, not individual accounts. Synchronous OCR is capped at five pages and has no hard inference cancellation. See [Vercel guide](VERCEL_GUIDE.md), [OCR gate](GLYPHARIS_INTEGRATION.md) and [evaluation plan](evaluation/README.md).
 
-Checkpoint history: plan `b785bb2`, backend `6013219`, OCR preparation `21d0885`, interface `0d497a0`. The release commit that contains this record is the next checkpoint; Git history is authoritative.
+Checkpoint history: plan `b785bb2`, backend `6013219`, OCR preparation `21d0885`, interface `0d497a0`, release `9ea41de`. Git history is authoritative.
+
+## Deployment correction (2026-10-13)
+
+The release's GitHub Actions jobs passed, but the combined commit status was failing: `book-worm-frontend` deployed successfully while the separate `book-worm` backend project failed. The previous completion report missed that external deployment check.
+
+Vercel build logs identify a UTF-8 BOM at byte zero of `backend/requirements.txt` as the parsing failure. Removed BOMs from both requirements manifests and both environment examples, and added a dependency-free CI encoding guard. No package versions or model behavior changed. The existing Vercel backend project remains architecturally unsuitable for the current persistent SQLite/uploads design; deployment acceptance must be recorded independently of this encoding correction.

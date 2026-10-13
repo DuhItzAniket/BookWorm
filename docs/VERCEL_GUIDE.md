@@ -2,6 +2,17 @@
 
 Verified against official documentation on 2026-10-09. This is a deployment recipe; no cloud resources have been provisioned or live deployment verified in this session.
 
+## Existing Vercel projects (checked 2026-10-13)
+
+The repository is connected to two projects in the `space-9de8` team:
+
+| Project | Root | Status for release `9ea41de` |
+|---|---|---|
+| `book-worm-frontend` | `frontend` | Vercel deployment succeeded |
+| `book-worm` | `backend` | Failed: Vercel rejected a UTF-8 BOM at the start of `requirements.txt` |
+
+The requirements manifests and environment examples now use UTF-8 without a BOM, with a CI encoding check to prevent recurrence. GitHub Actions success and Vercel deployment success are separate checks; inspect both. The backend project's existing FastAPI deployment does **not** match the persistent-host design below. Removing a parsing error does not establish that BERT, model caching, SQLite and uploads will work on Vercel. Migrate the backend to the documented persistent host before switching the frontend API URL; retire the old backend Git integration only after that migration is accepted.
+
 ## Recommended topology
 
 - **Vercel:** Next.js frontend, rooted at `frontend/`.

@@ -19,6 +19,8 @@ jobs:
           python-version: '3.11'
           cache: pip
           cache-dependency-path: backend/requirements-test.txt
+      - name: Check deployment file encoding
+        run: python scripts/check_deployment_encoding.py
       - run: python -m pip install -r requirements-test.txt
       - run: python -m pytest tests -q
       - run: python -m pip check
