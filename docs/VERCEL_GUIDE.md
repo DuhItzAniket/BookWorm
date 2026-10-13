@@ -13,6 +13,8 @@ The repository is connected to two projects in the `space-9de8` team:
 
 The requirements manifests and environment examples now use UTF-8 without a BOM, with a CI encoding check to prevent recurrence. GitHub Actions success and Vercel deployment success are separate checks; inspect both. The backend project's existing FastAPI deployment does **not** match the persistent-host design below. Removing a parsing error does not establish that BERT, model caching, SQLite and uploads will work on Vercel. Migrate the backend to the documented persistent host before switching the frontend API URL; retire the old backend Git integration only after that migration is accepted.
 
+After encoding correction `9c46ab2`, [GitHub CI](https://github.com/DuhItzAniket/BookWorm/actions/runs/38336264529) and the [frontend deployment](https://vercel.com/space-9de8/book-worm-frontend/5Mv3NXu71FK89vGw5u1TXfD1S4vA) passed. The [backend build](https://vercel.com/space-9de8/book-worm/7v5DZCSeHPkDpZxn5kAAA1cDQUZy) advanced past dependency parsing, then failed with `Total bundle size (5634.57 MB) exceeds the maximum function size (500 MB)`. The deployed attempt used Vercel's default Python 3.12 and ordinary PyPI dependencies; the Docker recipe instead explicitly installs CPU PyTorch on Python 3.11. A smaller CPU bundle alone would not solve persistent database/uploads, and large-function beta was not enabled. No Vercel backend check has been disabled to conceal this failure.
+
 ## Recommended topology
 
 - **Vercel:** Next.js frontend, rooted at `frontend/`.
